@@ -66,11 +66,6 @@
   delay: 1
   until: copy_result.rc == 0
 
-- name: Copy file
-  ansible.builtin.copy:
-    src: /tmp/client.p12
-    dest: /mnt/c/Users/pedro.novaes/Downloads/client.p12
-
 - name: Get guacadmin password
   shell: podman exec guacamole-combined sh -c 'cat "$GUACAMOLE_SCHEMA/password"'
   register: guac_pass
