@@ -1,0 +1,10 @@
+type = process
+command = /usr/bin/env -i -C $GUACD_HOME HOME=$GUACD_HOME \
+    LC_ALL=C.UTF-8 LD_LIBRARY_PATH=$GUACD_HOME/lib \
+    $GUACD_HOME/sbin/guacd -f
+run-as = guacd
+smooth-recovery = false
+restart = false
+chain-to = scripted/shutdown
+options: shares-console always-chain
+depends-on: process/tomcat

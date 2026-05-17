@@ -1,0 +1,9 @@
+type = process
+command = /usr/bin/env -i GUACAMOLE_HOME=$GUACW_HOME JAVA_HOME=$JAVA_HOME \
+    $TOMCAT_HOME/bin/catalina.sh run
+run-as = tomcat
+smooth-recovery = false
+restart = false
+chain-to = scripted/shutdown
+options: shares-console always-chain
+depends-on: process/postgres

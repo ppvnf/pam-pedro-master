@@ -1,0 +1,14 @@
+---
+- name: Login to GitLab Registry
+  containers.podman.podman_login:
+    username: "{{ git_user }}"
+    password: "{{ git_password }}"
+    registry: "{{ git_repo }}"
+    tlsverify: no
+
+- name: Pull the latest Guacamole image
+  containers.podman.podman_image:
+    name: "{{ remote_image }}"
+    tlsverify: no
+    tag: "{{ image_tag }}"
+    force: true

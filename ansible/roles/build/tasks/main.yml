@@ -1,0 +1,44 @@
+---
+- name: Run prepare-build.sh to generate build.env
+  ansible.builtin.command: sh ../pipeline/prepare-build.sh
+  args:
+    chdir: "{{ playbook_dir }}"
+  environment:
+    CI_REGISTRY_IMAGE: "{{ image_registry }}"
+  register: prepare_output
+
+- name: Read generated build.env
+  ansible.builtin.slurp:
+    src: "{{ playbook_dir }}/build.env"
+  register: build_env_raw
+
+- name: Debug raw build.env content
+  debug:
+    msg: "{{ build_env_raw.content | b64decode }}"
+
+- name: Convert build.env into Ansible facts
+  ansible.builtin.set_fact:
+    build_env: "{{ dict( (build_env_raw.content | b64decode).splitlines() | map('trim') | select('search', '=') | map('split', '=', 1) ) }}"
+
+- name: Delete build.env after loading facts
+  ansible.builtin.file:
+    path: "{{ playbook_dir }}/build.env"
+    state: absent
+
+- name: Build guacamole-combined image
+  containers.podman.podman_image:
+    name: "{{ local_image }}"
+    path: "{{ playbook_dir | dirname }}"
+    state: build
+    force: true
+    tag: "{{ image_tag }}"
+    build:
+      format: docker
+      extra_args: >-
+        --build-arg REGISTRY=mirror.gcr.io
+        --build-arg JAVA_MAJOR={{ build_env.JAVA_MAJOR }}
+        --build-arg GUAC_VER={{ build_env.GUAC_VER }}
+        --build-arg ALPINE_VER={{ build_env.ALPINE_VER }}
+        --build-arg TOMCAT_VER={{ build_env.TOMCAT_VER }}
+        --build-arg JAVA_VER={{ build_env.JAVA_VER }}
+        --build-arg POSTGRES_VER={{ build_env.POSTGRES_VER }}

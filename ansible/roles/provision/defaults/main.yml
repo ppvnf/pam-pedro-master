@@ -1,0 +1,42 @@
+---
+base_url: "https://localhost/guacamole/api"
+guac_groups:
+  - name: "appdev"
+    users: ["pedro.novaes", "test.user1"]
+    connections:
+      - {
+          name: "dummyssh",
+          proto: "ssh",
+          port: "",
+          user: "root",
+          pass: "{{ ssh_root_password }}",
+          host: "dummyssh",
+        }
+      - {
+          name: "dummytelnet",
+          proto: "telnet",
+          port: "",
+          user: "user",
+          pass: "",
+          host: "dummytelnet",
+        }
+
+  - name: "csirt"
+    users: ["pedro.novaes", "test.user2"]
+    connections:
+      - {
+          name: "dummyvnc",
+          proto: "vnc",
+          port: "5901",
+          user: "root",
+          pass: "",
+          host: "dummyvnc",
+        }
+      - {
+          name: "dummyrdp",
+          proto: "rdp",
+          port: "",
+          user: "{{ rdp_user }}",
+          pass: "{{ rdp_password }}",
+          host: "dummyrdp",
+        }

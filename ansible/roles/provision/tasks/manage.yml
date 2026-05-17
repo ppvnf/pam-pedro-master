@@ -1,0 +1,111 @@
+---
+# 1. CONNECTION GROUP SETUP
+- name: "Group [{{ group.name }}]: Ensure Connection Group exists"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/connectionGroups{{ token_param }}"
+    method: POST
+    body:
+      name: "{{ group.name }}"
+      type: "ORGANIZATIONAL"
+      attributes: {}
+
+- name: "Group [{{ group.name }}]: Retrieve Connection Group ID"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/connectionGroups{{ token_param }}"
+    method: GET
+  register: all_groups
+
+- name: "Group [{{ group.name }}]: Set current_group_id fact"
+  ansible.builtin.set_fact:
+    current_group_id: "{{ (all_groups.json | dict2items | selectattr('value.name', 'equalto', group.name) | first).key }}"
+
+# 2. USER GROUP SETUP
+- name: "Group [{{ group.name }}]: Ensure User Group exists"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/userGroups{{ token_param }}"
+    method: POST
+    body:
+      identifier: "{{ group.name }}"
+      attributes: {}
+
+- name: "Group [{{ group.name }}]: Grant User Group READ on Connection Group"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/userGroups/{{ group.name }}/permissions{{ token_param }}"
+    method: PATCH
+    body:
+      - op: "add"
+        path: "/connectionGroupPermissions/{{ current_group_id }}"
+        value: "READ"
+
+# 3. USER MANAGEMENT
+- name: "Group [{{ group.name }}]: Ensure users exist"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/users{{ token_param }}"
+    method: POST
+    body:
+      username: "{{ item }}"
+      attributes: {}
+  loop: "{{ group.users }}"
+
+- name: "Group [{{ group.name }}]: Assign users to the User Group"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/userGroups/{{ group.name }}/memberUsers{{ token_param }}"
+    method: PATCH
+    body:
+      - op: "add"
+        path: "/"
+        value: "{{ item }}"
+  loop: "{{ group.users }}"
+
+# 4. CONNECTION CREATION / UPDATE
+- name: "Group [{{ group.name }}]: Fetch existing connections in this group"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/connections{{ token_param }}"
+    method: GET
+  register: all_connections
+
+- name: "Group [{{ group.name }}]: Build name→ID map for this group"
+  ansible.builtin.set_fact:
+    existing_conn_map: >-
+      {{ all_connections.json | dict2items
+         | selectattr('value.parentIdentifier', 'equalto', current_group_id)
+         | map('combine', {})
+         | items2dict(key_name='key', value_name='key') }}
+
+- name: "Group [{{ group.name }}]: Create or update connections"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/connections/{{ existing_conn_map[item.name] | default('') }}{{ token_param }}"
+    method: "{{ 'PUT' if item.name in existing_conn_map else 'POST' }}"
+    body:
+      parentIdentifier: "{{ current_group_id }}"
+      name: "{{ item.name }}"
+      protocol: "{{ item.proto }}"
+      attributes: {}
+      parameters:
+        hostname: "{{ item.host }}"
+        port: "{{ item.port }}"
+        username: "{{ item.user }}"
+        password: "{{ item.pass }}"
+        ignore-cert: "true"
+        recording-path: "${HISTORY_PATH}/${HISTORY_UUID}"
+        create-recording-path: "true"
+        typescript-path: "${HISTORY_PATH}/${HISTORY_UUID}"
+        create-typescript-path: "true"
+  loop: "{{ group.connections }}"
+
+# 5. MAP PERMISSIONS TO USERS
+- name: "Group [{{ group.name }}]: Fetch connection IDs for this specific group"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/connections{{ token_param }}"
+    method: GET
+  register: group_connections
+
+- name: "Group [{{ group.name }}]: Grant User Group READ on Connection Group's connections"
+  ansible.builtin.uri:
+    url: "{{ data_url }}/userGroups/{{ group.name }}/permissions{{ token_param }}"
+    method: PATCH
+    body:
+      - op: "add"
+        path: "/connectionPermissions/{{ item.key }}"
+        value: "READ"
+  loop: "{{ group_connections.json | dict2items | selectattr('value.parentIdentifier', 'equalto', current_group_id) | list }}"

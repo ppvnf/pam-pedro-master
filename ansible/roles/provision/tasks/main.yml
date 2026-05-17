@@ -1,0 +1,47 @@
+---
+- name: Convert p12 to pem
+  ansible.builtin.shell: |
+    openssl pkcs12 -in /tmp/client.p12 -out /tmp/client.pem -nodes -passin pass:"{{ mtls_cert_pass }}"
+
+- name: Guacamole Provisioning
+  block:
+    - name: 1. Get Authentication Token
+      ansible.builtin.uri:
+        url: "{{ base_url }}/tokens"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          username: "guacadmin"
+          password: "{{ guac_admin_pass }}"
+          guac-totp: "{{ guac_admin_totp }}"
+      register: auth_res
+
+    - name: Main logic for provisioning Guacamole
+      block:
+        - name: 2. Set token variables
+          ansible.builtin.set_fact:
+            token: "{{ auth_res.json.authToken }}"
+            token_param: "?token={{ auth_res.json.authToken }}"
+
+        - name: 3. Create Groups, Users, and Connections
+          ansible.builtin.include_tasks: manage.yml
+          loop: "{{ guac_groups }}"
+          loop_control:
+            loop_var: group
+      always:
+        - name: 4. Delete Authentication Token
+          ansible.builtin.uri:
+            url: "{{ base_url }}/tokens/{{ token | default('') }}"
+            method: DELETE
+        - name: Remove client pem
+          ansible.builtin.file:
+            path: /tmp/client.pem
+            state: absent
+
+  # default parameters for API calls
+  module_defaults:
+    ansible.builtin.uri:
+      validate_certs: false
+      client_cert: "/tmp/client.pem"
+      body_format: json
+      status_code: [200, 204, 400]

@@ -1,0 +1,2 @@
+---
+data_url: "{{ base_url }}/session/data/postgresql"

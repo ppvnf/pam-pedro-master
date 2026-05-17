@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Server port="8005" shutdown="SHUTDOWN">
+
+  <Listener className="org.apache.catalina.core.JreMemoryLeakPreventionListener"/>
+  <Listener className="org.apache.catalina.core.ThreadLocalLeakPreventionListener"/>
+
+  <Service name="Catalina">
+
+    <Connector port="$INTERNAL_PORT"
+        maxThreads="150"
+        scheme="https"
+        secure="true"
+        SSLEnabled="true"
+        truststoreFile="/certs/server.keystore"
+        truststorePass="$SERVER_CERT_PASS"
+        keystoreFile="/certs/server.keystore"
+        keystorePass="$SERVER_CERT_PASS"
+        clientAuth="true"
+        keyAlias="serveralias"
+        sslProtocol="TLS"/>
+
+    <Engine name="Catalina" defaultHost="localhost">
+      <Host name="localhost"
+            appBase="webapps"
+            unpackWARs="true"
+            autoDeploy="true"/>
+    </Engine>
+
+  </Service>
+</Server>

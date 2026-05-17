@@ -1,0 +1,16 @@
+---
+- name: Guacamole Configuration Management
+  hosts: localhost
+  gather_facts: false
+  vars_prompt:
+    - name: guac_admin_pass
+      prompt: "Enter guacadmin password"
+      private: true
+    - name: guac_admin_totp
+      prompt: "Enter guacadmin totp"
+      private: true
+    - name: mtls_cert_pass
+      prompt: "Enter mtls cert password"
+      private: true
+  roles:
+    - provision

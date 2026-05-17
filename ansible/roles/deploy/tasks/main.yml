@@ -1,0 +1,104 @@
+---
+- name: Create podman network (ignoring if it already exists)
+  containers.podman.podman_network:
+    name: "{{ guacamole_network }}"
+    state: present
+
+- name: Deploy all containers
+  block:
+    - name: Run guacamole-combined container
+      containers.podman.podman_container:
+        name: guacamole-combined
+        ports:
+          - "{{ guacamole_external_port }}:{{ guacamole_internal_port }}"
+        image: "{{ container_image }}:{{ image_tag }}"
+        volumes:
+          - guacamole-certs:/etc/certs
+        env:
+          guacamole_auth_sso_saml: "{{ guacamole_auth_sso_saml | string | lower }}"
+          guacamole_auth_ldap: "{{ guacamole_auth_ldap | string | lower }}"
+          saml_idp_metadata_url: "{{ saml_idp_metadata_url }}"
+          saml_entity_id: "{{ saml_entity_id }}"
+          saml_callback_url: "{{ saml_callback_url }}"
+          saml_strict: "{{ saml_strict }}"
+
+    - name: Run dummyssh container
+      containers.podman.podman_container:
+        name: dummyssh
+        image: mirror.gcr.io/hermsi/alpine-sshd
+        env:
+          ROOT_PASSWORD: "{{ ssh_root_password }}"
+
+    - name: Run dummytelnet container
+      containers.podman.podman_container:
+        name: dummytelnet
+        image: mirror.gcr.io/secobau/telnetd:alpine
+        stop_timeout: 0
+
+    - name: Run dummyvnc container
+      containers.podman.podman_container:
+        name: dummyvnc
+        image: mirror.gcr.io/consol/debian-xfce-vnc
+        user: "0"
+        env:
+          VNC_PASSWORDLESS: "true"
+
+    - name: Run dummyrdp container
+      containers.podman.podman_container:
+        name: dummyrdp
+        image: mirror.gcr.io/frxyt/xrdp:lxde
+        stop_timeout: 0
+        env:
+          FRX_XRDP_USER_NAME: "{{ rdp_user }}"
+          FRX_XRDP_USER_PASSWORD: "{{ rdp_password }}"
+
+  # common parameters for all containers
+  module_defaults:
+    containers.podman.podman_container:
+      state: started
+      recreate: yes
+      network: "{{ guacamole_network }}"
+
+- name: Copy client.p12 from container
+  shell: podman cp guacamole-combined:/certs/client.p12 /tmp/client.p12
+  register: copy_result
+  retries: 10
+  delay: 1
+  until: copy_result.rc == 0
+
+- name: Copy file
+  ansible.builtin.copy:
+    src: /tmp/client.p12
+    dest: /mnt/c/Users/pedro.novaes/Downloads/client.p12
+
+- name: Get guacadmin password
+  shell: podman exec guacamole-combined sh -c 'cat "$GUACAMOLE_SCHEMA/password"'
+  register: guac_pass
+  retries: 10
+  delay: 1
+  until: guac_pass.rc == 0
+
+- name: Get certificate password
+  shell: podman exec guacamole-combined sh -c 'cat "/certs/password"'
+  register: cert_pass
+  retries: 10
+  delay: 1
+  until: cert_pass.rc == 0
+
+- name: Print deployment info
+  debug:
+    msg:
+      - "========================================"
+      - "  Guacamole is ready!"
+      - "========================================"
+      - "  URL: https://{{ inventory_hostname }}:{{ guacamole_external_port }}/guacamole"
+      - "  Username: guacadmin"
+      - "  Password (unless changed): {{ guac_pass.stdout }}"
+      - "========================================"
+      - "  TOTP must be set up on first login"
+      - "========================================"
+      - "  mTLS client certificate saved to: /tmp/client.p12"
+      - "  Password: {{ cert_pass.stdout }}"
+      - "  Import client.p12 into your browser before connecting"
+      - "  Firefox: Settings > Privacy & Security > Manage Certificates > Your Certificates > Import"
+      - "========================================"

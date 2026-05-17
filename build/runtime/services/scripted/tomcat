@@ -1,0 +1,6 @@
+type = scripted
+command = /usr/bin/env -C /certs PATH=$JAVA_HOME/bin:$PATH /scripts/init/tomcat.sh
+restart = false
+options: shares-console
+depends-on: scripted/main
+run-as = tomcat

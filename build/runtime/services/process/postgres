@@ -1,0 +1,12 @@
+type = process
+command = /usr/bin/env -i /usr/local/bin/postgres \
+    -c config_file=/postgres/postgresql.conf \
+    -c hba_file=/postgres/pg_hba.conf \
+    -c ident_file=/postgres/pg_ident.conf \
+    -c data_directory=$PGDATA
+run-as = postgres
+smooth-recovery = false
+restart = false
+chain-to = scripted/shutdown
+options: shares-console always-chain
+depends-on: scripted/postgres

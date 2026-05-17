@@ -1,0 +1,6 @@
+type = scripted
+command = /scripts/init/postgres.sh
+restart = false
+options: shares-console
+depends-on: scripted/tomcat
+run-as = postgres

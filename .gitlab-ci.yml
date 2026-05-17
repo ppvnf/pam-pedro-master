@@ -1,0 +1,99 @@
+stages:
+  - prepare
+  - build
+  - custom-test
+  - test
+  - application-security-testing
+  - publish
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_TAG
+      when: never
+    - when: always
+
+prepare-build:
+  stage: prepare
+  image:
+    name: quay.io/skopeo/stable
+    entrypoint: [""]
+  before_script:
+    - skopeo login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - sh pipeline/prepare-build.sh
+  artifacts:
+    reports:
+      dotenv: build.env
+
+check-version:
+  stage: prepare
+  image:
+    name: registry.gitlab.com/gitlab-org/cli:latest
+    entrypoint: [""]
+  needs:
+    - job: prepare-build
+      artifacts: true
+  variables:
+    GLAB_ENABLE_CI_AUTOLOGIN: "true"
+  script:
+    - sh pipeline/check-version.sh
+
+build-image:
+  stage: build
+  image: quay.io/buildah/stable
+  needs:
+    - job: prepare-build
+      artifacts: true
+  before_script:
+    - buildah login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - sh pipeline/build-image.sh
+
+smoke-test:
+  stage: custom-test
+  image:
+    name: quay.io/podman/stable
+  needs:
+    - job: build-image
+      artifacts: false
+  before_script:
+    - podman login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - sh pipeline/smoke-test.sh
+
+publish-dev:
+  stage: publish
+  image:
+    name: quay.io/skopeo/stable
+    entrypoint: [""]
+  needs:
+    - job: smoke-test
+      artifacts: false
+  before_script:
+    - skopeo login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - sh pipeline/publish-dev.sh
+
+publish-latest:
+  stage: publish
+  image:
+    name: quay.io/skopeo/stable
+    entrypoint: [""]
+  needs:
+    - job: prepare-build
+      artifacts: true
+    - job: smoke-test
+      artifacts: false
+  before_script:
+    - skopeo login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" "$CI_REGISTRY"
+  script:
+    - sh pipeline/publish-latest.sh
+  when: manual
+
+sast:
+  stage: application-security-testing
+
+include:
+  - template: Security/SAST.gitlab-ci.yml
+  - template: Security/SAST-IaC.latest.gitlab-ci.yml
+  - template: Jobs/Container-Scanning.gitlab-ci.yml

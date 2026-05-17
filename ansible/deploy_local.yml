@@ -1,0 +1,14 @@
+---
+- name: Deploy Guacamole and Dummy Environments
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars_prompt:
+    - name: ansible_become_password
+      prompt: "Enter sudo password"
+      private: true
+  roles:
+    - build
+    - name: deploy
+      vars:
+        container_image: "localhost/{{ local_image }}"

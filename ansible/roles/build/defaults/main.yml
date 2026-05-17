@@ -1,0 +1,2 @@
+local_image: "guacamole-combined"
+image_registry: "mirror.gcr.io"

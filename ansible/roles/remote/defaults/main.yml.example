@@ -1,0 +1,5 @@
+---
+remote_image: "{{ git_repo }}/csirt/pam-pedro"
+git_user: "Name Example"
+git_password: "glpat-your-personal.token"
+git_repo: "registry.gitlab.example"

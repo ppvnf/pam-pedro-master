@@ -1,0 +1,6 @@
+---
+image_tag: "dev"
+# container passwords
+rdp_user: "test"
+rdp_password: "test"
+ssh_root_password: "test"

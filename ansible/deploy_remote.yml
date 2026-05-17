@@ -1,0 +1,14 @@
+---
+- name: Deploy Guacamole from Remote Registry
+  hosts: localhost
+  gather_facts: false
+  become: true
+  vars_prompt:
+    - name: ansible_become_password
+      prompt: "Enter sudo password"
+      private: true
+  roles:
+    - remote
+    - name: deploy
+      vars:
+        container_image: "{{ remote_image }}"

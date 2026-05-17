@@ -1,0 +1,11 @@
+.login-ui .login-dialog .logo {
+    background-image: url('app/ext/custom-homepage/images/logo.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    width: 12em;
+    display: block;
+}
+div.login-ui {
+	background-color: #ef6c00;
+}

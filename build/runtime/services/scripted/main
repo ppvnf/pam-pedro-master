@@ -1,0 +1,4 @@
+type = scripted
+command = /scripts/init/main.sh
+restart = false
+options: shares-console
