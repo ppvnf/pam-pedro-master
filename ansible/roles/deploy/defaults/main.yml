@@ -1,7 +1,7 @@
 guacamole_network: "guacnet"
 guacamole_external_port: 443
 guacamole_internal_port: 8443
-guacamole_auth_sso_saml: true
+guacamole_auth_sso_saml: false
 guacamole_auth_ldap: false
 saml_idp_metadata_url: "https://login.microsoftonline.com/example-url/federationmetadata/2007-06/federationmetadata.xml?appid=example-url"
 saml_entity_id: "https://localhost:443/guacamole"

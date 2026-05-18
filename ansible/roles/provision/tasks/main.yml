@@ -1,7 +1,7 @@
 ---
 - name: Convert p12 to pem
   ansible.builtin.shell: |
-    openssl pkcs12 -in /tmp/client.p12 -out /tmp/client.pem -nodes -passin pass:"{{ mtls_cert_pass }}"
+    openssl pkcs12 -in client.p12 -out client.pem -nodes -passin pass:"{{ mtls_cert_pass }}"
 
 - name: Guacamole Provisioning
   block:
@@ -35,13 +35,13 @@
             method: DELETE
         - name: Remove client pem
           ansible.builtin.file:
-            path: /tmp/client.pem
+            path: client.pem
             state: absent
 
   # default parameters for API calls
   module_defaults:
     ansible.builtin.uri:
       validate_certs: false
-      client_cert: "/tmp/client.pem"
+      client_cert: "client.pem"
       body_format: json
       status_code: [200, 204, 400]

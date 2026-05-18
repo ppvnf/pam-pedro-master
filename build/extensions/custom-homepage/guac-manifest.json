@@ -10,9 +10,6 @@
        "css" : [
               "css/custom-homepage.css"
        ],
-       "html" : [
-              "html/sso-button.html"
-       ],
        "resources" : {
               "images/logo.png" : "image/png",
               "images/logo-64.png" : "image/png",

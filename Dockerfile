@@ -13,10 +13,13 @@ FROM $REGISTRY/tomcat:$TOMCAT_VER-jre$JAVA_MAJOR AS tomcat
 FROM $REGISTRY/eclipse-temurin:$JAVA_VER-jre-alpine-$ALPINE_VER AS java
 FROM $REGISTRY/alpine:$ALPINE_VER AS builder
 
-COPY build/custom-homepage /custom-homepage
+COPY build/extensions /
 RUN apk add --no-cache zip && \
     cd /custom-homepage && \
     zip -r /custom-homepage.jar .
+RUN apk add --no-cache zip && \
+    cd /sso-button && \
+    zip -r /sso-button.jar .
 
 FROM $REGISTRY/postgres:$POSTGRES_VER-alpine$ALPINE_VER AS postgres
 
@@ -52,6 +55,7 @@ COPY --from=guacamole-webclient --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=700 \
     "$GUACW_HOME"/optional_extensions/
 COPY --from=guacamole-webclient --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=700 "$GUAC_BASE"/drivers/postgresql-jdbc.jar "$GUACW_HOME"/lib/postgresql-jdbc.jar
 COPY --from=builder --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=400 /custom-homepage.jar "$GUACW_HOME"/extensions/custom-homepage.jar
+COPY --from=builder --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=400 /sso-button.jar "$GUACW_HOME"/optional_extensions/sso-button.jar
 COPY --from=tomcat --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=700 "$TOMCAT_HOME"/ "$TOMCAT_HOME"/
 COPY --from=java --chown=$TOMCAT_UID:$TOMCAT_UID --chmod=700 $JAVA_HOME/ $JAVA_HOME/
 COPY --from=guacamole-guacd --chown=$GUACD_UID:$GUACD_UID --chmod=400 /lib/libssl.so.1.1 /lib/libcrypto.so.1.1 /lib/

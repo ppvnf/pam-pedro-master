@@ -1,18 +1,24 @@
 #!/usr/bin/env sh
 set -eu
 
-enable_optional_extensions() {
-    EXTENSIONS="guacamole_auth_sso_saml guacamole_auth_ldap"
-    for var in $EXTENSIONS; do
-        eval enabled=\$$var
-        jar_name="${var//_/-}"
-        extension_path="$GUACW_HOME/extensions/$jar_name.jar"
-        if [ "$enabled" = true ]; then
-            ln -sf "$GUACW_HOME/optional_extensions/$jar_name.jar" "$extension_path"
-        else
-            rm -f "$extension_path"
-        fi
-    done
+enable_saml() {
+    if [ "$guacamole_auth_sso_saml" = true ]; then
+        ln -sf \
+            "$GUACW_HOME/optional_extensions/guacamole-auth-sso-saml.jar" \
+            "$GUACW_HOME/optional_extensions/sso-button.jar" \
+            "$GUACW_HOME/extensions/"
+    else
+        rm -f "$GUACW_HOME/extensions/guacamole-auth-sso-saml.jar" "$GUACW_HOME/extensions/sso-button.jar"
+    fi
+}
+
+enable_ldap() {
+    if [ "$guacamole_auth_ldap" = true ]; then
+        ln -sf "$GUACW_HOME/optional_extensions/guacamole-auth-ldap.jar" \
+            "$GUACW_HOME/extensions/guacamole-auth-ldap.jar"
+    else
+        rm -f "$GUACW_HOME/extensions/guacamole-auth-ldap.jar"
+    fi
 }
 
 generate_certs() {
@@ -56,7 +62,8 @@ generate_certs() {
 }
 
  main() {
-    enable_optional_extensions
+    enable_saml
+    enable_ldap
     if [ ! -f server.xml ]; then
         generate_certs
     fi

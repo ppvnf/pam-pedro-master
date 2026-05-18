@@ -60,7 +60,7 @@
       network: "{{ guacamole_network }}"
 
 - name: Copy client.p12 from container
-  shell: podman cp guacamole-combined:/certs/client.p12 /tmp/client.p12
+  shell: podman cp guacamole-combined:/certs/client.p12 client.p12
   register: copy_result
   retries: 10
   delay: 1
@@ -84,7 +84,8 @@
   debug:
     msg:
       - "========================================"
-      - "  Guacamole is ready!"
+      - "   Guacamole is ready!"
+      - "   This version has SAML disabled by default, check the repo description for instructions"
       - "========================================"
       - "  URL: https://{{ inventory_hostname }}:{{ guacamole_external_port }}/guacamole"
       - "  Username: guacadmin"
@@ -92,7 +93,7 @@
       - "========================================"
       - "  TOTP must be set up on first login"
       - "========================================"
-      - "  mTLS client certificate saved to: /tmp/client.p12"
+      - "  mTLS client certificate saved to current directory: client.p12"
       - "  Password: {{ cert_pass.stdout }}"
       - "  Import client.p12 into your browser before connecting"
       - "  Firefox: Settings > Privacy & Security > Manage Certificates > Your Certificates > Import"

@@ -1,0 +1,9 @@
+{
+       "guacamoleVersion" : "*",
+       "name" : "sso-button",
+       "namespace" : "sso-button",
+       "html" : [
+              "html/sso-button.html"
+       ]
+}
+
