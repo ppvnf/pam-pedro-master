@@ -11,7 +11,6 @@ FROM $REGISTRY/guacamole/guacamole:$GUAC_VER AS guacamole-webclient
 FROM $REGISTRY/guacamole/guacd:$GUAC_VER AS guacamole-guacd
 FROM $REGISTRY/tomcat:$TOMCAT_VER-jre$JAVA_MAJOR AS tomcat
 FROM $REGISTRY/eclipse-temurin:$JAVA_VER-jre-alpine-$ALPINE_VER AS java
-FROM $REGISTRY/postgres:$POSTGRES_VER-alpine$ALPINE_VER AS postgres
 FROM $REGISTRY/alpine:$ALPINE_VER AS builder
 
 COPY build/custom-homepage /custom-homepage
@@ -19,7 +18,9 @@ RUN apk add --no-cache zip && \
     cd /custom-homepage && \
     zip -r /custom-homepage.jar .
 
-FROM scratch AS runtime
+FROM $REGISTRY/postgres:$POSTGRES_VER-alpine$ALPINE_VER AS postgres
+
+USER root
 
 ARG GUAC_VER
 ENV GUAC_VER=$GUAC_VER
@@ -35,7 +36,6 @@ ENV PGDATA=/var/lib/postgresql PGDATABASE=guacamole_db PGUSER=postgres
 ENV POSTGRES_UID=70 TOMCAT_UID=71 GUACD_UID=72
 ENV INTERNAL_PORT=8443
 
-COPY --from=postgres / /
 COPY --chmod=555 build/runtime/ /
 COPY --chown=$POSTGRES_UID:$POSTGRES_UID --chmod=400 build/postgres /postgres
 COPY --from=guacamole-webclient --chown=$POSTGRES_UID:$POSTGRES_UID --chmod=500 "$GUAC_EXT"/guacamole-auth-jdbc/postgresql/schema/ "$GUACAMOLE_SCHEMA"/
