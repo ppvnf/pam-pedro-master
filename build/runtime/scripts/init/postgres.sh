@@ -47,22 +47,12 @@ register_schema_version() {
     psql -f /tmp/register_schema_version.sql
 }
 
-generate_db() {
-    initdb
-    pg_ctl start
-    createdb
-    psql -f "$GUACAMOLE_SCHEMA/001-create-schema.sql"
-}
-
-stop_postgres() {
-    psql -f /tmp/create-guacamole-role.sql
-    rm -f /tmp/*.sql
-    pg_ctl stop
-}
-
 main() {
     if [ ! -d "$PGDATA/base" ]; then
-        generate_db
+        initdb
+        pg_ctl start
+        createdb
+        psql -f "$GUACAMOLE_SCHEMA/001-create-schema.sql"
         generate_guacadmin
         register_schema_version
     else
@@ -75,7 +65,9 @@ main() {
             register_schema_version
         fi
     fi
-    stop_postgres
+    psql -f /tmp/create-guacamole-role.sql
+    rm -f /tmp/*.sql
+    pg_ctl stop
 }
 
 main
