@@ -1,2 +1,7 @@
-<meta name="after" content=".login-ui .login-form">
+<meta name="after" content="input.login">
 <button id="sso-login-button" onclick="window.location='/guacamole/api/ext/saml/login'" style="margin: 10px 0px 0px 0px; width: 100%;">Sign in with Entra</button>
+<style>
+    .login-form:has(.totp-code-field) #sso-login-button {
+        display: none;
+    }
+</style>

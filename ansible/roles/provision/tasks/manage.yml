@@ -91,6 +91,7 @@
         create-recording-path: "true"
         typescript-path: "${HISTORY_PATH}/${HISTORY_UUID}"
         create-typescript-path: "true"
+        recording-include-keys: "true"
   loop: "{{ group.connections }}"
 
 # 5. MAP PERMISSIONS TO USERS
