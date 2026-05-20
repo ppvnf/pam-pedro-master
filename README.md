@@ -4,17 +4,17 @@ A bachelor thesis project implementing a PAM (Privileged Access Management) solu
 
 ## Requirements
 
-- AlmaLinux 9 (the distro shouldn't matter)
+- AlmaLinux 9 (other distros should work)
 - Podman
 - Ansible
-- Firefox (easiest to set up certificates)
+- Firefox (recommended for certificate import)
 
 ## Quick Start
 
 Clone the repository and navigate to the Ansible folder:
 
 ```sh
-git clone github.com:ppvnf/pam-pedro-master.git
+git clone https://github.com/ppvnf/pam-pedro-master.git
 cd pam-pedro-master/ansible
 ```
 
@@ -24,9 +24,7 @@ Deploy the Guacamole image:
 ansible-playbook deploy_local.yml
 ```
 
-At the end of the deployment, follow the printed instructions to import the mTLS certificate (saved in the current dir) into Firefox and then set up TOTP for the guacadmin account by logging in at https://localhost/guacamole
-
-Don 't forget to save the certificate and admin passwords
+At the end of the deployment, follow the printed instructions to import the mTLS certificate (saved in the current directory) into Firefox and set up TOTP for the guacadmin account by logging in at https://localhost/guacamole. Don't forget to save both the certificate and admin passwords.
 
 Once TOTP is configured, run the provisioning playbook:
 
@@ -34,9 +32,10 @@ Once TOTP is configured, run the provisioning playbook:
 ansible-playbook provision.yml
 ```
 
-Refresh the page and you should be able to see and connect to the demo containers using the guacadmin account. 
+Refresh the page and you should be able to see and connect to the demo containers using the guacadmin account.
 
-Recording is enabled by default. Available at https://localhost/guacamole/#/settings/postgresql/history
+Session recordings are enabled by default and available at:
+https://localhost/guacamole/#/settings/postgresql/history
 
 ## SAML / Microsoft Entra SSO
 
@@ -49,7 +48,6 @@ SAML is disabled by default. To enable it:
 ## Notes
 
 - The GitLab CI/CD pipeline is not functional on GitHub.
-
--  I have replaced the company icons in `build/extensions/custom-homepage/images`
+- The company icons in `build/extensions/custom-homepage/images` have been replaced for this public release.
 
 <a href="https://www.flaticon.com/free-icons/spiderman" title="Spiderman icons">Spiderman icons created by egorpolyakov - Flaticon</a>
