@@ -28,7 +28,7 @@ ansible-playbook deploy_local.yml
 
 It will print instructions and credentials at the end. Import the mTLS certificate (saved in the current directory) into Firefox, then log in as guacadmin at https://localhost/guacamole to set up TOTP.
 
-Save both the certificate and admin passwords before continuing.
+Save both the certificate and guacadmin passwords before continuing.
 
 Once TOTP is configured, run the provisioning playbook:
 
