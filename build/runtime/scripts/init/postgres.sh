@@ -9,7 +9,7 @@ generate_guacadmin() {
     export GUACAMOLE_ADMIN_USER SALT HASH
     envsubst < "/config/sql/create-guacamole-admin.tpl.sql" > /tmp/create-guacamole-admin.sql
     psql -f /tmp/create-guacamole-admin.sql
-    printf "%s" "$GUACAMOLE_ADMIN_PASSWORD" | install -m 700 /dev/stdin "$GUACAMOLE_SCHEMA/password"
+    printf "%s" "$GUACAMOLE_ADMIN_PASSWORD" | install -m 700 /dev/stdin "$PGDATA/guacadmin_password"
 }
 
 get_schema_version() {

@@ -69,7 +69,7 @@
   until: copy_result.rc == 0
 
 - name: Get guacadmin password
-  shell: podman exec guacamole-combined sh -c 'cat "$GUACAMOLE_SCHEMA/password"'
+  shell: podman exec guacamole-combined sh -c 'cat "$PGDATA/guacadmin_password"'
   register: guac_pass
   retries: 10
   delay: 1
