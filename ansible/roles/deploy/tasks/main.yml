@@ -13,7 +13,9 @@
           - "{{ guacamole_external_port }}:{{ guacamole_internal_port }}"
         image: "{{ container_image }}:{{ image_tag }}"
         volumes:
-          - guacamole-certs:/etc/certs
+          - guacamole-certs:/certs
+          - guacamole-pgdata:/var/lib/postgresql
+          - guacamole-records:/var/lib/guacamole/recordings
         env:
           guacamole_auth_sso_saml: "{{ guacamole_auth_sso_saml | string | lower }}"
           guacamole_auth_ldap: "{{ guacamole_auth_ldap | string | lower }}"
