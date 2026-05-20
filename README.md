@@ -1,6 +1,8 @@
 # guacamole-pam-pedro
 
-A bachelor thesis project implementing a PAM (Privileged Access Management) solution using Apache Guacamole as the remote desktop gateway, with automated build and deployment powered by GitLab CI/CD, Podman, and Ansible.
+a PAM (Privileged Access Management) solution using Apache Guacamole as the remote desktop gateway, with automated build and deployment powered by GitLab CI/CD, Podman, and Ansible
+
+This repository is a local deployment version intended for demonstration purposes.
 
 ## Requirements
 
@@ -24,7 +26,9 @@ Deploy the Guacamole image:
 ansible-playbook deploy_local.yml
 ```
 
-At the end of the deployment, follow the printed instructions to import the mTLS certificate (saved in the current directory) into Firefox and set up TOTP for the guacadmin account by logging in at https://localhost/guacamole. Don't forget to save both the certificate and admin passwords.
+It will print instructions and credentials at the end. Import the mTLS certificate (saved in the current directory) into Firefox, then log in as guacadmin at https://localhost/guacamole to set up TOTP.
+
+Save both the certificate and admin passwords before continuing.
 
 Once TOTP is configured, run the provisioning playbook:
 
