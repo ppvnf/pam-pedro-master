@@ -1,6 +1,6 @@
 # guacamole-pam-pedro
 
-a PAM (Privileged Access Management) solution using Apache Guacamole as the remote desktop gateway, with automated build and deployment powered by GitLab CI/CD, Podman, and Ansible
+PAM (Privileged Access Management) solution using Apache Guacamole as the remote desktop gateway, with automated build and deployment powered by GitLab CI/CD, Podman, and Ansible
 
 This repository is a local deployment version intended for demonstration purposes.
 
