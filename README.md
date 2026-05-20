@@ -1,23 +1,54 @@
 # guacamole-pam-pedro
 
-This bachelor thesis focuses on building a PAM (Privileged Access Management) system using Apache Guacamole remote desktop gateway service.
+A bachelor thesis project implementing a PAM (Privileged Access Management) 
+solution using Apache Guacamole as the remote desktop gateway, with automated 
+build and deployment powered by GitLab CI/CD, Podman, and Ansible.
 
-It is possible to run it locally on Linux using Podman, Ansible and Firefox.
- 
-Clone the git repository and cd to the ansible folder.
- 
-run: ansible-playbook deploy_local.yml
- 
-This command will build and deploy the guacamole image.
- 
-At the end it will give you instructions on how to import the certificate and set up TOTP.
+## Requirements
 
-After you set up TOTP and save the password for guacadmin and the one for the certificate run: ansible-playbook provision.yml and provide those passwords.
- 
-At the end, if you refresh the page, you should be able to see and connect to the demo containers using the guacadmin account.
+- AlmaLinux 9 (the distro shouldn't matter)
+- Podman
+- Ansible
+- Firefox (easiest to set up certificates)
 
-The Gitlab pipeline obviously doesn't work on Github.
+## Quick Start
 
-SAML is disabled by default, although it is working already. To configure SAML, besides creating an APP on Azure AD, you need to modify ansible/roles/remote/defaults/main.yml.example and enable it in ansible/roles/deploy/defaults/main.yml
+Clone the repository and navigate to the Ansible folder:
 
+```sh
+git clone github.com:ppvnf/pam-pedro-master.git
+cd pam-pedro-master/ansible
+```
+
+Deploy the Guacamole image:
+
+```sh
+ansible-playbook deploy_local.yml
+```
+
+At the end of the deployment, follow the printed instructions to import 
+the mTLS certificate into Firefox and set up TOTP for the guacadmin account by accessing https://localhost/guacamole
+Don 't forget to save the certificate and admin passwords
+
+Once TOTP is configured, run the provisioning playbook and provide the passwords when prompted
+
+```sh
+ansible-playbook provision.yml
+```
+
+Refresh the page and you should be able to see and connect to the demo 
+containers using the guacadmin account.
+
+## SAML / Microsoft Entra SSO
+
+SAML is disabled by default. To enable it:
+
+1. Create an enterprise application in Azure AD and configure it as described 
+   in the thesis.
+2. Fill in your settings in `ansible/roles/remote/defaults/main.yml.example`.
+3. Enable SAML in `ansible/roles/deploy/defaults/main.yml`.
+
+## Notes
+
+- The GitLab CI/CD pipeline is not functional on GitHub.
 <a href="https://www.flaticon.com/free-icons/spiderman" title="Spiderman icons">Spiderman icons created by egorpolyakov - Flaticon</a>
