@@ -44,6 +44,10 @@ Once TOTP is configured, run the provisioning playbook:
 ansible-playbook provision.yml
 ```
 
+Provide the TOTP code, the certificate password and the guacadmin password before continuing.
+
+![provision instructions](provision.png)
+
 Refresh the page and you should be able to see and connect to the demo containers using the guacadmin account.
 
 ![demo containers](screenshots/containers.png)
