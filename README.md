@@ -4,6 +4,9 @@ PAM (Privileged Access Management) solution using Apache Guacamole as the remote
 
 This repository is a local deployment version intended for demonstration purposes.
 
+![home page](screenshots/home.png)
+
+
 ## Requirements
 
 - AlmaLinux 9 (other distros should work)
@@ -38,8 +41,12 @@ ansible-playbook provision.yml
 
 Refresh the page and you should be able to see and connect to the demo containers using the guacadmin account.
 
+![demo containers](screenshots/containers.png)
+
 Session recordings are enabled by default and available at:
 https://localhost/guacamole/#/settings/postgresql/history
+
+![recording](screenshots/recording.png)
 
 ## SAML / Microsoft Entra SSO
 
