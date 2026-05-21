@@ -56,6 +56,7 @@ Session recordings are enabled by default and available at:
 https://localhost/guacamole/#/settings/postgresql/history
 
 ![recording](screenshots/recording.png)
+![recording 2](screenshots/recording2.png)
 
 ## SAML / Microsoft Entra SSO
 
