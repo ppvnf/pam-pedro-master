@@ -62,10 +62,9 @@ https://localhost/guacamole/#/settings/postgresql/history
 SAML is disabled by default. To enable it:
 
 1. Create an enterprise application in Microsoft Entra and configure it as described in section 5.4.2.3. SAML extension.
-2. Fill in your git credentials in `ansible/roles/remote/defaults/main.yml.example` and rename it to `main.yml`
-![git credentials](screenshots/git_credentials.png)
-3. Enable SAML in `ansible/roles/deploy/defaults/main.yml`.
+2. Enable SAML in `ansible/roles/deploy/defaults/main.yml`.
 ![saml](screenshots/saml.png)
+
 ## Notes
 
 - The GitLab CI/CD pipeline is not functional on GitHub.
