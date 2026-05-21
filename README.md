@@ -69,6 +69,8 @@ SAML is disabled by default. To enable it:
 ## Notes
 
 - The GitLab CI/CD pipeline is not functional on GitHub.
+![pipeline](screenshots/pipeline.png)
 - The company icons in `build/extensions/custom-homepage/images` have been replaced for this public release.
+![icons](screenshots/icons.png)
 
 <a href="https://www.flaticon.com/free-icons/spiderman" title="Spiderman icons">Spiderman icons created by egorpolyakov - Flaticon</a>
