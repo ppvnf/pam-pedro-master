@@ -1,0 +1,3 @@
+---
+remote_image: "{{ git_repo }}/pedro-pam/pam-guacamole/pam"
+git_repo: "registry.gitlab.com"

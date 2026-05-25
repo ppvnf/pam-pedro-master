@@ -2,16 +2,23 @@
 
 PAM (Privileged Access Management) solution using Apache Guacamole as the remote desktop gateway, with automated build and deployment powered by GitLab CI/CD, Podman, and Ansible
 
-This repository is a local deployment version intended for demonstration purposes.
+This repository is intended for demonstration purposes only. 
+
+The GitLab pipeline (https://gitlab.com/pedro-pam/pam-guacamole/-/pipelines) works, except security testing which is only available in the premium version.
+
+The Docker images are available on https://gitlab.com/pedro-pam/pam-guacamole/container_registry
+
 
 ![home page](screenshots/home.png)
 
 
 ## Requirements
 
-- AlmaLinux 9 (other distros should work)
+- Linux
 - Podman
 - Ansible
+- OpenSSL
+- Skopeo (required only for local build)
 - Firefox (recommended for certificate import)
 
 ## Quick Start
@@ -23,7 +30,18 @@ git clone https://github.com/ppvnf/pam-pedro-master.git
 cd pam-pedro-master/ansible
 ```
 
-Deploy the Guacamole image:
+Deploy the Guacamole image (pulls image from remote):
+
+```sh
+ansible-playbook deploy_remote.yml
+```
+if you get an error about no policy.json file, create one and make sure unsigned repo/images are accepted:
+
+```sh
+echo '{"default":[{"type":"insecureAcceptAnything"}]}' | sudo tee /etc/containers/policy.json
+```
+
+Alternatively the image can be built locally:
 
 ```sh
 ansible-playbook deploy_local.yml

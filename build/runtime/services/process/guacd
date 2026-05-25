@@ -1,7 +1,7 @@
 type = process
 command = /usr/bin/env -i -C $GUACD_HOME HOME=$GUACD_HOME \
     LC_ALL=C.UTF-8 LD_LIBRARY_PATH=$GUACD_HOME/lib \
-    $GUACD_HOME/sbin/guacd -f
+    $GUACD_HOME/sbin/guacd -f -b 127.0.0.1
 run-as = guacd
 smooth-recovery = false
 restart = false
