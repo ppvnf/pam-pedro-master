@@ -33,7 +33,7 @@ cd pam-pedro-master/ansible
 Deploy the Guacamole image (pulls image from remote):
 
 ```sh
-ansible-playbook deploy_remote.yml
+sudo ansible-playbook deploy_remote.yml
 ```
 if you get an error about no policy.json file, create one and make sure unsigned repo/images are accepted:
 
@@ -44,7 +44,7 @@ echo '{"default":[{"type":"insecureAcceptAnything"}]}' | sudo tee /etc/container
 Alternatively the image can be built locally:
 
 ```sh
-ansible-playbook deploy_local.yml
+sudo ansible-playbook deploy_local.yml
 ```
 
 It will print instructions and credentials at the end. 
@@ -62,7 +62,7 @@ Then log in as guacadmin at https://localhost/guacamole to set up TOTP
 Once TOTP is configured, run the provisioning playbook:
 
 ```sh
-ansible-playbook provision.yml
+sudo ansible-playbook provision.yml
 ```
 
 Provide the TOTP code, the certificate password and the guacadmin password before continuing.
